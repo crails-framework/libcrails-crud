@@ -1,0 +1,7 @@
+project = libcrails-crud
+
+using version
+using config
+using test
+using install
+using dist

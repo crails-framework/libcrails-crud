@@ -1,0 +1,12 @@
+: 1
+name: libcrails-crud
+version: 0.1.0-a.0.z
+summary: templates to quickly set up CRUD controllers with the crails framework
+license: other: proprietary ; Not free/open source.
+description-file: README.md
+url: https://github.com/crails-framework/libcrails-crud
+email: michael@unetresgrossebite.com
+#build-error-email: michael@unetresgrossebite.com
+depends: * build2 >= 0.15.0
+depends: * bpkg >= 0.15.0
+depends: libcrails ^2.0.0
