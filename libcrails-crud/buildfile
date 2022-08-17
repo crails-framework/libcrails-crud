@@ -13,7 +13,7 @@ cxx.poptions =+ "-I$out_root" "-I$src_root"
 
 lib{crails-crud}:
 {
-  cxx.export.poptions = "-I$out_root" "-I$src_root"
+  cxx.export.poptions = "-I$out_root/libcrails-crud/" "-I$src_root/libcrails-crud/"
   cxx.export.libs = $intf_libs
 }
 
@@ -27,6 +27,6 @@ else
 
 {hxx ixx txx}{*}:
 {
-  install         = include/crails/
+  install         = include/
   install.subdirs = true
 }
