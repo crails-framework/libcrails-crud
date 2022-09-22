@@ -5,16 +5,8 @@
 # include <crails/safe_ptr.hpp>
 # include <crails/controller.hpp>
 # include <crails/odb/connection.hpp>
-# include <crails/models/helpers.hpp>
+# include <crails/odb/to_vector.hpp>
 # include <crails/crud/paginator.hpp>
-
-# define crudify(router, path, controller) \
-  router. SetRoute("GET",    std::string(path),          controller, index) \
-  router. SetRoute("GET",    std::string(path) + "/:id", controller, show) \
-  router. SetRoute("POST",   std::string(path),          controller, create) \
-  router. SetRoute("PATCH",  std::string(path) + "/:id", controller, update) \
-  router. SetRoute("PUT",    std::string(path) + "/:id", controller, update) \
-  router. SetRoute("DELETE", std::string(path) + "/:id", controller, destroy)
 
 namespace Crud
 {
@@ -170,7 +162,7 @@ namespace Crud
 
         paginator.decorate_query(query);
         BASE::database.find(results, query);
-        models = odb::to_vector<MODEL, QUERY_OBJECT>(results);
+        models = Crails::Odb::to_vector<MODEL, QUERY_OBJECT>(results);
         return models.size() > 0;
       }
 
