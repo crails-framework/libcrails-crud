@@ -6,7 +6,7 @@
 # include <crails/controller.hpp>
 # include <crails/odb/connection.hpp>
 # include <crails/odb/to_vector.hpp>
-# include <crails/crud/paginator.hpp>
+# include <crails/paginator.hpp>
 
 namespace Crud
 {
@@ -20,7 +20,7 @@ namespace Crud
 
       Controller(Crails::Context& context) :
         BASE(context),
-        paginator(context.params.as_data())
+        paginator(BASE::params.as_data())
       {
       }
 
@@ -150,7 +150,7 @@ namespace Crud
       virtual bool find_model()
       {
         auto param_name = get_id_param_name();
-        auto id = BASE::params[param_name].template as<ODB::id_type>();
+        auto id = BASE::params[param_name].template as<Crails::Odb::id_type>();
 
         return BASE::database.find_one(model, odb::query<MODEL>::id == id);
       }

@@ -1,7 +1,7 @@
 intf_libs = # Interface dependencies.
 impl_libs = # Implementation dependencies.
-import libs += libcrails%lib{crails}
-import libs += libdatatree%lib{datatree}
+import intf_libs += libcrails%lib{crails}
+import intf_libs += libdatatree%lib{datatree}
 
 lib{crails-crud}: {hxx ixx txx cxx}{**} $impl_libs $intf_libs
 
