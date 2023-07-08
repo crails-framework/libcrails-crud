@@ -1,3 +1,4 @@
+#ifdef WITH_ODB
 #ifndef  BELONGS_TO_CONTROLLER_HPP
 # define BELONGS_TO_CONTROLLER_HPP
 
@@ -50,4 +51,5 @@ namespace Crud
   };
 }
 
+#endif
 #endif

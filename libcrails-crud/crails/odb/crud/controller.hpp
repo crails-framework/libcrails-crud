@@ -1,3 +1,4 @@
+#ifdef WITH_ODB
 #ifndef  CRUD_ODB_CONTROLLER_HPP
 # define CRUD_ODB_CONTROLLER_HPP
 
@@ -75,9 +76,9 @@ namespace Crud
       {
         if (edit_model(get_model_params()))
         {
+          BASE::database.save(*model);
           BASE::vars["model"] = model.get();
           BASE::render(get_show_view());
-          BASE::database.save(*model);
           after_update();
         }
       }
@@ -176,11 +177,12 @@ namespace Crud
         return Query(true);
       }
 
-      Paginator          paginator;
+      Crails::Paginator  paginator;
       safe_ptr<MODEL>    model;
       std::vector<MODEL> models;
     };
   }
 }
 
+#endif
 #endif

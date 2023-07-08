@@ -9,5 +9,5 @@ email: michael@unetresgrossebite.com
 #build-error-email: michael@unetresgrossebite.com
 depends: * build2 >= 0.15.0
 depends: * bpkg >= 0.15.0
-depends: libcrails ^2.0.0
+depends: { libcrails libcrails-paginator } ^2.0.0
 depends: libdatatree ^2.0.0

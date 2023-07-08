@@ -6,4 +6,8 @@ location: https://github.com/crails-framework/libcrails.git#master
 
 :
 role: prerequisite
+location: https://github.com/crails-framework/libcrails-paginator.git#master
+
+:
+role: prerequisite
 location: https://github.com/crails-framework/libdatatree.git#master
