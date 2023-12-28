@@ -32,10 +32,7 @@ namespace Crud
         auto query = odb::query<PARENT>::id == parent_id;
 
         if (!(Super::database.find_one(parent_resource, query)))
-        {
-          Super::response.set_status_code(Crails::HttpStatus::not_found);
-          Super::close();
-        }
+          Super::repsond_with(Crails::HttpStatus::not_found);
       }
     }
 

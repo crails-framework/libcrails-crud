@@ -66,9 +66,9 @@ namespace Crud
         if (initialize_model(model_params) && edit_model(model_params))
         {
           BASE::database.save(*model);
+          after_create();
           BASE::vars["model"] = model.get();
           BASE::render(get_show_view());
-          after_create();
         }
       }
 
@@ -77,9 +77,9 @@ namespace Crud
         if (edit_model(get_model_params()))
         {
           BASE::database.save(*model);
+          after_update();
           BASE::vars["model"] = model.get();
           BASE::render(get_show_view());
-          after_update();
         }
       }
 
@@ -87,6 +87,7 @@ namespace Crud
       {
         BASE::database.destroy(*model);
         after_destroy();
+        BASE::respond_with(Crails::HttpStatus::ok);
       }
 
     protected:
