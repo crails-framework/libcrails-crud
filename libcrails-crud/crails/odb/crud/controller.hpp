@@ -2,92 +2,72 @@
 #ifndef  CRUD_ODB_CONTROLLER_HPP
 # define CRUD_ODB_CONTROLLER_HPP
 
-# include <crails/params.hpp>
-# include <crails/safe_ptr.hpp>
-# include <crails/controller.hpp>
+# include "../../crud/base_controller.hpp"
 # include <crails/odb/connection.hpp>
 # include <crails/odb/to_vector.hpp>
-# include <crails/paginator.hpp>
 
 namespace Crud
 {
   namespace Odb
   {
     template<typename BASE, typename MODEL, typename QUERY_OBJECT = MODEL>
-    class Controller : public BASE
+    class Controller : public Crud::BaseController<BASE, MODEL>
     {
+      typedef Crud::BaseController<BASE, MODEL> Super;
     public:
       typedef odb::query<QUERY_OBJECT> Query;
 
-      Controller(Crails::Context& context) :
-        BASE(context),
-        paginator(BASE::params.as_data())
+      CRUD_BASE_CONTROLLER_IMPL(Super)
+
+      Controller(Crails::Context& context) : Super(context)
       {
       }
 
-      void initialize() override
-      {
-        BASE::initialize();
-        initialize_crud();
-      }
-
-      void initialize_crud()
-      {
-        for (auto action : get_actions_with_model())
-        {
-          if (action == BASE::params["controller-data"]["action"].template as<std::string>())
-          {
-            require_model();
-            break ;
-          }
-        }
-      }
-
-      void index()
+      void index() override
       {
         find_models();
-        paginator.decorate_view(BASE::vars, [this]() {
-          return BASE::database.template count<QUERY_OBJECT>(get_index_query());
+        Super::paginator.decorate_view(Super::vars, [this]() {
+          return Super::database.template count<QUERY_OBJECT>(get_index_query());
         });
-        BASE::vars["models"] = &models;
-        BASE::render(get_index_view());
+        Super::vars["models"] = &(reinterpret_cast<std::vector<MODEL>&>(Super::models));
+        Super::render(get_index_view());
       }
 
-      void show()
+      void show() override
       {
-        BASE::vars["model"] = model.get();
-        BASE::render(get_show_view());
+        Super::vars["model"] = Super::model.get();
+        Super::render(get_show_view());
       }
 
-      void create()
+      void create() override
       {
         Data model_params = get_model_params();
 
         if (initialize_model(model_params) && edit_model(model_params))
         {
-          BASE::database.save(*model);
+          Super::database.save(*Super::model);
           after_create();
-          BASE::vars["model"] = model.get();
-          BASE::render(get_show_view());
+          Super::vars["model"] = Super::model.get();
+          Super::render(get_show_view());
         }
       }
 
-      void update()
+      void update() override
       {
         if (edit_model(get_model_params()))
         {
-          BASE::database.save(*model);
+          Super::database.save(*Super::model);
           after_update();
-          BASE::vars["model"] = model.get();
-          BASE::render(get_show_view());
+          Super::vars["model"] = Super::model.get();
+          Super::render(get_show_view());
         }
       }
 
-      void destroy()
+      void destroy() override
       {
-        BASE::database.destroy(*model);
+        Super::database.destroy(*Super::model);
         after_destroy();
-        BASE::respond_with(Crails::HttpStatus::ok);
+        Super::respond_with(Crails::HttpStatus::ok);
       }
 
     protected:
@@ -95,92 +75,29 @@ namespace Crud
       virtual void after_create() {}
       virtual void after_destroy() {}
 
-      virtual std::string get_view_path() const
-      {
-        if (MODEL::scope != "")
-          return MODEL::scope + "/";
-        return "";
-      }
-
-      virtual std::string get_show_view()  const { return get_view_path() + "show"; }
-      virtual std::string get_index_view() const { return get_view_path() + "index"; }
-
-      virtual std::vector<std::string> get_actions_with_model() const
-      {
-        return { "show", "update", "destroy" };
-      }
-
-      virtual bool initialize_model(Data data)
-      {
-        model = std::make_shared<MODEL>();
-        return true;
-      }
-
-      virtual bool edit_model(Data data)
-      {
-        model->edit(data);
-        model->on_change();
-        return validate();
-      }
-
-      virtual bool validate()
-      {
-        if (!model->is_valid())
-        {
-          Crails::Controller::render(Crails::Controller::JSON,
-            model->errors.as_data()
-          );
-          BASE::response.set_status_code(Crails::HttpStatus::bad_request);
-          return false;
-        }
-        return true;
-      }
-
-      virtual Data get_model_params()
-      {
-        if (MODEL::scope == "")
-          return BASE::params.as_data();
-        return BASE::params[MODEL::scope];
-      }
-
-      void require_model()
-      {
-        if (!find_model())
-          BASE::response.set_status_code(Crails::HttpStatus::not_found);
-      }
-
-      virtual bool find_model()
-      {
-        auto param_name = get_id_param_name();
-        auto id = BASE::params[param_name].template as<Crails::Odb::id_type>();
-
-        return BASE::database.find_one(model, odb::query<MODEL>::id == id);
-      }
-
-      virtual bool find_models()
-      {
-        Query query = get_index_query();
-        odb::result<QUERY_OBJECT> results;
-
-        paginator.decorate_query(query);
-        BASE::database.find(results, query);
-        models = Crails::Odb::to_vector<MODEL, QUERY_OBJECT>(results);
-        return models.size() > 0;
-      }
-
-      virtual std::string get_id_param_name() const
-      {
-        return "id";
-      }
-
       virtual Query get_index_query() const
       {
         return Query(true);
       }
 
-      Crails::Paginator  paginator;
-      safe_ptr<MODEL>    model;
-      std::vector<MODEL> models;
+      virtual bool find_model() override
+      {
+        auto param_name = get_id_param_name();
+        auto id = Super::params[param_name].template as<Crails::Odb::id_type>();
+
+        return Super::database.find_one(Super::model, odb::query<MODEL>::id == id);
+      }
+
+      virtual bool find_models() override
+      {
+        Query query = get_index_query();
+        odb::result<QUERY_OBJECT> results;
+
+        Super::paginator.decorate_query(query);
+        Super::database.find(results, query);
+        Super::models = Crails::Odb::to_vector<MODEL, QUERY_OBJECT>(results);
+        return Super::models.size() > 0;
+      }
     };
   }
 }

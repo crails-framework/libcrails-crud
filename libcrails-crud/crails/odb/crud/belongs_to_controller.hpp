@@ -15,7 +15,7 @@ namespace Crud
     template<typename BASE, typename RESOURCE, typename PARENT = RESOURCE>
     class BelongsToController : public Crud::Odb::Controller<BASE, RESOURCE>
     {
-      typedef Crud::Controller<BASE, RESOURCE> Super;
+      typedef Crud::Odb::Controller<BASE, RESOURCE> Super;
     public:
       BelongsToController(Crails::Context& context) : Super(context)
       {}
@@ -34,7 +34,7 @@ namespace Crud
           auto query = odb::query<PARENT>::id == parent_id;
 
           if (!(Super::database.find_one(parent_resource, query)))
-            Super::repsond_with(Crails::HttpStatus::not_found);
+            Super::respond_with(Crails::HttpStatus::not_found);
         }
       }
 
