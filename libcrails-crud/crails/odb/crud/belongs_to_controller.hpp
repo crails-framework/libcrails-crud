@@ -10,42 +10,45 @@
 
 namespace Crud
 {
-  template<typename BASE, typename RESOURCE, typename PARENT = RESOURCE>
-  class BelongsToController : public Crud::Controller<BASE, RESOURCE>
+  namespace Odb
   {
-    typedef Crud::Controller<BASE, RESOURCE> Super;
-  public:
-    BelongsToController(Crails::Context& context) : Super(context)
-    {}
-
-    void initialize()
+    template<typename BASE, typename RESOURCE, typename PARENT = RESOURCE>
+    class BelongsToController : public Crud::Odb::Controller<BASE, RESOURCE>
     {
-      Super::initialize();
-      initialize_parent_resource();
-    }
+      typedef Crud::Controller<BASE, RESOURCE> Super;
+    public:
+      BelongsToController(Crails::Context& context) : Super(context)
+      {}
 
-    void initialize_parent_resource()
-    {
-      if (has_parent_id_param())
+      void initialize()
       {
-        auto parent_id = Super::params["parent_id"].template as<Crails::Odb::id_type>();
-        auto query = odb::query<PARENT>::id == parent_id;
-
-        if (!(Super::database.find_one(parent_resource, query)))
-          Super::repsond_with(Crails::HttpStatus::not_found);
+        Super::initialize();
+        initialize_parent_resource();
       }
-    }
 
-    bool has_parent_id_param() const
-    {
-      std::string parent_id = Super::params["parent_id"].template defaults_to<std::string>("root");
+      void initialize_parent_resource()
+      {
+        if (has_parent_id_param())
+        {
+          auto parent_id = Super::params["parent_id"].template as<Crails::Odb::id_type>();
+          auto query = odb::query<PARENT>::id == parent_id;
 
-      return parent_id != "all" && parent_id != "root";
-    }
+          if (!(Super::database.find_one(parent_resource, query)))
+            Super::repsond_with(Crails::HttpStatus::not_found);
+        }
+      }
 
-  protected:
-    std::shared_ptr<PARENT> parent_resource;
-  };
+      bool has_parent_id_param() const
+      {
+        std::string parent_id = Super::params["parent_id"].template defaults_to<std::string>("root");
+
+        return parent_id != "all" && parent_id != "root";
+      }
+
+    protected:
+      std::shared_ptr<PARENT> parent_resource;
+    };
+  }
 }
 
 #endif
