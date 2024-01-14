@@ -20,6 +20,8 @@ namespace Crud
   template<typename BASE, typename MODEL>
   class BaseController : public BASE
   {
+    template<typename CONTROLLER>
+    friend class ActionRoute;
   protected:
     BaseController(Crails::Context& context) :
       BASE(context),
