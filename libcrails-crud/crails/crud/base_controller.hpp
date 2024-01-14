@@ -22,7 +22,7 @@ namespace Crud
   {
     template<typename CONTROLLER>
     friend class ActionRoute;
-  protected:
+  public:
     BaseController(Crails::Context& context) :
       BASE(context),
       paginator(BASE::params.as_data())
