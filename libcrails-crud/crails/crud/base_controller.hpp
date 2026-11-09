@@ -3,6 +3,7 @@
 #include <crails/safe_ptr.hpp>
 #include <crails/controller.hpp>
 #include <crails/paginator.hpp>
+#include <algorithm>
 
 #define CRUD_BASE_CONTROLLER_IMPL(SUPER) \
     virtual std::string get_id_param_name() const override { return SUPER::get_id_param_name(); } \
@@ -46,14 +47,11 @@ namespace Crud
 
     virtual void initialize_crud()
     {
-      for (auto action : get_actions_with_model())
-      {
-        if (action == BASE::params["controller-data"]["action"].template as<std::string>())
-        {
-          require_model();
-          break ;
-        }
-      }
+      auto action_name = BASE::get_action_name();
+      auto actions = get_actions_with_model();
+
+      if (std::find(actions.begin(), actions.end(), action_name) != actions.end())
+        require_model();
     }
   
     virtual std::string get_view_path() const
