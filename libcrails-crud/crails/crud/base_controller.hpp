@@ -78,13 +78,29 @@ namespace Crud
     virtual bool edit_model(Data data)
     {
       model->edit(data);
-      model->on_change();
+      on_model_changed();
       return validate();
+    }
+
+    virtual void on_model_changed()
+    {
+      if constexpr (requires { model->on_change(); })
+        model->on_change();
+      else
+        model->on_change(BASE::database);
+    }
+
+    virtual bool is_model_valid()
+    {
+      if constexpr (requires { model->is_valid(); })
+        return model->is_valid();
+      else
+        return model->is_valid(BASE::database);
     }
 
     virtual bool validate()
     {
-      if (!model->is_valid())
+      if (!is_model_valid())
       {
         Crails::Controller::render(Crails::Controller::JSON,
           model->errors.as_data()
