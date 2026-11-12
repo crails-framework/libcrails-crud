@@ -77,7 +77,10 @@ namespace Crud
 
     virtual bool edit_model(Data data)
     {
-      model->edit(data);
+      if constexpr (requires { model->edit(BASE::database, data); })
+        model->edit(BASE::database, data);
+      else
+        model->edit(data);
       on_model_changed();
       return validate();
     }
