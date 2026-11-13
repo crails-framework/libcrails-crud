@@ -110,9 +110,7 @@ int main()
     Crails::ActionRoute<ArticleController>::attach(controller, [&]() { status_when_sent = fixture.status(); });
     controller.initialize_model(controller.get_model_params());
     controller.edit_model(controller.get_model_params());
-#ifdef PATCHED
     assert(status_when_sent == 400);
-#endif
   }
 
   // validate() can be called on its own

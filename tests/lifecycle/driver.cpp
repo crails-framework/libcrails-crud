@@ -116,11 +116,9 @@ int main()
     controller.model_exists = false;
     run(controller, &ArticleController::destroy, [&closed]() { ++closed; });
     assert(fixture.status() == 404);
-#ifdef PATCHED
     assert(controller.is_closed());
     assert(closed == 1);
     assert(controller.actions.empty());
-#endif
   }
 
   // When the model is found, the action runs

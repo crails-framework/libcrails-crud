@@ -105,10 +105,8 @@ namespace Crud
     {
       if (!is_model_valid())
       {
-        Crails::Controller::render(Crails::Controller::JSON,
-          model->errors.as_data()
-        );
         BASE::response.set_status_code(Crails::HttpStatus::bad_request);
+        BASE::render(Crails::Controller::JSON, model->errors.as_data());
         return false;
       }
       return true;
@@ -124,7 +122,10 @@ namespace Crud
     void require_model()
     {
       if (!find_model())
+      {
         BASE::response.set_status_code(Crails::HttpStatus::not_found);
+        BASE::close();
+      }
     }
 
     virtual std::string get_id_param_name() const
